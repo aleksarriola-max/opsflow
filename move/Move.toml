@@ -1,0 +1,13 @@
+[package]
+name = "ops_agent"
+edition = "2024.beta"
+version = "0.1.0"
+
+# Modern Sui CLI (>= 1.45) bundles the framework — no explicit dependency
+# needed, which avoids the slow/flaky git fetch. If you are on an older CLI,
+# uncomment the lines below.
+# [dependencies]
+# Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+
+[addresses]
+ops_agent = "0x0"
