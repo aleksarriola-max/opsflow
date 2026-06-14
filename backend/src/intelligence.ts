@@ -24,21 +24,35 @@ export function detectAnomalies(
   const factors: AnomalyFactor[] = [];
   const executed = history.filter((h) => h.state === "Executed" || h.state === "Closed");
 
-  // First-time vendor
+  // Vendor trust: a first-time payee carries the most risk, but that risk
+  // decays as the agent builds an executed track record with the vendor —
+  // rather than dropping to zero the moment a single payment clears.
   const vendorHistory = executed.filter((h) => h.vendor === req.vendor);
-  if (vendorHistory.length === 0) {
+  const vendorPaymentCount = vendorHistory.length;
+  if (vendorPaymentCount === 0) {
     factors.push({
       factor: "first-time-vendor",
       detail: `No prior executed payments to ${req.vendorName}. New payees carry elevated risk.`,
       weight: 15,
     });
-  } else {
-    // Amount deviation vs vendor history
-    const avg = vendorHistory.reduce((s, h) => s + h.amount, 0) / vendorHistory.length;
-    if (req.amount > avg * 3) {
+  } else if (vendorPaymentCount < 3) {
+    factors.push({
+      factor: "limited-vendor-history",
+      detail: `Only ${vendorPaymentCount} prior executed payment${vendorPaymentCount > 1 ? "s" : ""} to ${req.vendorName} — the agent is still building a track record with this vendor.`,
+      weight: vendorPaymentCount === 1 ? 8 : 4,
+    });
+  }
+
+  if (vendorPaymentCount > 0) {
+    // Amount deviation vs vendor history. With few prior payments the
+    // average is unreliable, so allow more headroom before flagging a
+    // deviation; tighten the multiple as the track record grows.
+    const avg = vendorHistory.reduce((s, h) => s + h.amount, 0) / vendorPaymentCount;
+    const deviationMultiple = vendorPaymentCount < 3 ? 5 : 3;
+    if (req.amount > avg * deviationMultiple) {
       factors.push({
         factor: "amount-deviation",
-        detail: `$${req.amount} is ${(req.amount / avg).toFixed(1)}x the historical average ($${Math.round(avg)}) for ${req.vendorName}.`,
+        detail: `$${req.amount} is ${(req.amount / avg).toFixed(1)}x the historical average ($${Math.round(avg)}) for ${req.vendorName} (based on ${vendorPaymentCount} prior payment${vendorPaymentCount > 1 ? "s" : ""}).`,
         weight: 20,
       });
     }

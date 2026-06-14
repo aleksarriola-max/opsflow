@@ -10,7 +10,7 @@ import { evaluatePolicy } from "./policyEngine.js";
 import * as orch from "./orchestrator.js";
 import { applyPolicy, proposePolicy } from "./policyAuthoring.js";
 import { addMember, agentCap, buckets, circuitBreaker, members, persistState, policy, requests, resetAll, resetCircuitBreaker, vendors } from "./store.js";
-import { chain, chainConfig, explorerUrl } from "./sui.js";
+import { chain, chainConfig, chainObjectGraph, explorerUrl } from "./sui.js";
 
 const app = express();
 app.use(cors());
@@ -27,7 +27,7 @@ const wrap = (fn: (req: express.Request, res: express.Response) => Promise<void>
 
 // === Reference data ===
 app.get("/api/meta", (_req, res) => {
-  res.json({ members, policy, buckets, vendors, agentCap, circuitBreaker, suiMode: chain.mode, chainConfig: chainConfig() });
+  res.json({ members, policy, buckets, vendors, agentCap, circuitBreaker, suiMode: chain.mode, chainConfig: chainConfig(), chainObjectGraph: chainObjectGraph() });
 });
 
 app.get("/api/forecast", (_req, res) => {

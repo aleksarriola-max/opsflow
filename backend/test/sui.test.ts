@@ -308,6 +308,21 @@ describe("sui chain mappings (testnet)", () => {
     const mod = await import("../src/sui.js");
     expect(mod.chainConfig()).toEqual({ packageId: "0xPKG", orgId: "0xORG" });
   });
+
+  it("chainObjectGraph returns the org's onchain object ids and explorer base url", async () => {
+    vi.resetModules();
+    const mod = await import("../src/sui.js");
+    expect(mod.chainObjectGraph()).toEqual({
+      network: "testnet",
+      packageId: "0xPKG",
+      orgId: "0xORG",
+      policyId: "0xPOLICY",
+      agentCapId: "0xAGENTCAP",
+      adminCapId: "0xADMINCAP",
+      buckets: [{ category: "software", id: "0xBUCKETSW" }],
+      explorerBaseUrl: "https://suiscan.xyz/testnet/object",
+    });
+  });
 });
 
 describe("sui chain mappings (mock mode)", () => {
@@ -336,5 +351,15 @@ describe("sui chain mappings (mock mode)", () => {
     process.env.SUI_MODE = original;
 
     expect(mod.chainConfig()).toBeNull();
+  });
+
+  it("chainObjectGraph returns null when no package/org is configured", async () => {
+    const original = process.env.SUI_MODE;
+    delete process.env.SUI_MODE;
+    vi.resetModules();
+    const mod = await import("../src/sui.js");
+    process.env.SUI_MODE = original;
+
+    expect(mod.chainObjectGraph()).toBeNull();
   });
 });

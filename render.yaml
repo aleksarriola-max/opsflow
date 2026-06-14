@@ -10,3 +10,24 @@ services:
         value: mock
       - key: VETO_WINDOW_MS
         value: "20000"
+      # Public object IDs from the real testnet deployment (move/deploy.ps1).
+      # Safe to publish: no secrets. These let the hosted demo render the
+      # org's real onchain object graph even while SUI_MODE=mock.
+      - key: SUI_PACKAGE_ID
+        value: "0xe79f4b0499f640503a3842897667d4dd4900643397f5065daa09ad51bd9d8b2e"
+      - key: SUI_ORG_ID
+        value: "0x9550dfd244fbd78cdf3d6884716fbfc19b61db8b2f07f9df92bc5eac4b39f60b"
+      - key: SUI_ADMIN_CAP_ID
+        value: "0x23436a2e104b71999b0ec638e43ad36610233d58ef37a8c134eea6d4588841f9"
+      - key: SUI_POLICY_ID
+        value: "0x4afe18e7b625df5c081dbe46d3e37cac4a5ac5aad6b189805d8a4c22929660e0"
+      - key: SUI_AGENT_CAP_ID
+        value: "0x2d6abf05e1435ae69f2b71dafdbb051938101b277a9eb714617271fdc32c043a"
+      - key: SUI_BUCKET_SOFTWARE_ID
+        value: "0xf2a2d60876eafe2e4082639d065c2b77856de498660323ee2a260dc0334fc98c"
+      - key: SUI_BUCKET_CONTRACTOR_ID
+        value: "0xbde1839e9cf7a5d72af67238bd11d054826a1e3ef3f17d80c4e4aae6658b9f74"
+      - key: SUI_BUCKET_EVENTS_ID
+        value: "0x82778912f437a4aebbebd935080bb5a5ea44fdec8f286ab8e8f2a2bea392b4d6"
+      - key: SUI_BUCKET_REIMBURSEMENTS_ID
+        value: "0x9f9626e44dcc93ec2facf213ee574bb98ea2ab6ae5c54565092dac8481dd3f54"

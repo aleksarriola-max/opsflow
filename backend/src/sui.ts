@@ -351,6 +351,43 @@ export function chainConfig(): { packageId: string; orgId: string } | null {
   return { packageId: envObj("SUI_PACKAGE_ID"), orgId: envObj("SUI_ORG_ID") };
 }
 
+export interface ChainObjectGraph {
+  network: "testnet" | "mainnet";
+  packageId: string;
+  orgId: string;
+  policyId?: string;
+  agentCapId?: string;
+  adminCapId?: string;
+  buckets: { category: string; id: string }[];
+  explorerBaseUrl: string;
+}
+
+const BUCKET_CATEGORIES = ["software", "contractor", "events", "reimbursements"];
+
+/** Real deployed-package + org-object IDs for the "this is a live onchain
+ *  org" visualization. Unlike chainConfig(), this is available regardless of
+ *  SUI_MODE — a mock-mode demo can still point at the real testnet objects
+ *  it was deployed alongside. `null` only if no package/org is configured. */
+export function chainObjectGraph(): ChainObjectGraph | null {
+  const packageId = process.env.SUI_PACKAGE_ID;
+  const orgId = process.env.SUI_ORG_ID;
+  if (!packageId || !orgId) return null;
+  const network: "testnet" | "mainnet" = MODE === "mainnet" ? "mainnet" : "testnet";
+  const buckets = BUCKET_CATEGORIES
+    .map((category) => ({ category, id: process.env[`SUI_BUCKET_${category.toUpperCase()}_ID`] }))
+    .filter((b): b is { category: string; id: string } => !!b.id);
+  return {
+    network,
+    packageId,
+    orgId,
+    policyId: process.env.SUI_POLICY_ID,
+    agentCapId: process.env.SUI_AGENT_CAP_ID,
+    adminCapId: process.env.SUI_ADMIN_CAP_ID,
+    buckets,
+    explorerBaseUrl: `https://suiscan.xyz/${network}/object`,
+  };
+}
+
 /** Short ticker for the configured payment coin, e.g. "SUI" or "USDC",
  *  derived from the last segment of SUI_PAYMENT_COIN_TYPE. */
 function currencySymbol(): string {

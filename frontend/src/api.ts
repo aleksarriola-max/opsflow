@@ -70,6 +70,20 @@ export interface Meta {
   /** Package + Org object IDs for building approve/reject txs client-side
    *  (zkLogin/Enoki path). `null` in mock mode. */
   chainConfig: { packageId: string; orgId: string } | null;
+  /** The org's real onchain object graph (package, org, policy, AgentCap,
+   *  budget buckets), with Explorer links — available whenever the org was
+   *  deployed to testnet/mainnet, regardless of the current SUI_MODE. */
+  chainObjectGraph: ChainObjectGraph | null;
+}
+export interface ChainObjectGraph {
+  network: "testnet" | "mainnet";
+  packageId: string;
+  orgId: string;
+  policyId?: string;
+  agentCapId?: string;
+  adminCapId?: string;
+  buckets: { category: string; id: string }[];
+  explorerBaseUrl: string;
 }
 export interface TimelineEvent { at: string; actor: string; kind: string; message: string; rule?: string }
 export interface WorkflowRequest {

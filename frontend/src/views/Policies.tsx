@@ -62,6 +62,8 @@ export function Policies({ meta, actor, onChanged }: { meta: Meta | null; actor:
       <h1 className="text-xl font-semibold text-white">Policy & Budget Administration</h1>
       {msg && <div className="bg-sky-950 border border-sky-800 text-sky-200 text-sm rounded-lg px-4 py-2">{msg}</div>}
 
+      <ChainGraphCard meta={meta} />
+
       {/* NL policy authoring */}
       <Card title="Write policy in plain English">
         <textarea
@@ -243,6 +245,68 @@ export function Policies({ meta, actor, onChanged }: { meta: Meta | null; actor:
         </p>
       </Card>
     </div>
+  );
+}
+
+const truncateId = (id: string) => `${id.slice(0, 8)}…${id.slice(-4)}`;
+
+function ChainGraphCard({ meta }: { meta: Meta }) {
+  const graph = meta.chainObjectGraph;
+  if (!graph) {
+    return (
+      <Card title="Onchain object graph">
+        <p className="text-sm text-slate-500">
+          This org hasn't been deployed to Sui testnet/mainnet yet — run{" "}
+          <code className="text-xs bg-slate-900 px-1 py-0.5 rounded">move/deploy.ps1</code> to publish the package and
+          create the Org, PolicySet, AgentCap and BudgetBucket objects visualized here.
+        </p>
+      </Card>
+    );
+  }
+
+  const link = (id: string) => `${graph.explorerBaseUrl}/${id}`;
+  const children: { label: string; id: string }[] = [];
+  if (graph.policyId) children.push({ label: "PolicySet", id: graph.policyId });
+  if (graph.agentCapId) children.push({ label: "AgentCap", id: graph.agentCapId });
+  if (graph.adminCapId) children.push({ label: "AdminCap", id: graph.adminCapId });
+  for (const b of graph.buckets) children.push({ label: `BudgetBucket · ${b.category}`, id: b.id });
+
+  return (
+    <Card title={`Onchain object graph (Sui ${graph.network})`}>
+      <p className="text-xs text-slate-500 mb-3">
+        Every box below is a real object on Sui {graph.network}, instantiated from package{" "}
+        <a href={link(graph.packageId)} target="_blank" rel="noreferrer" className="font-mono text-cyan-300 hover:underline">
+          {truncateId(graph.packageId)}
+        </a>.
+      </p>
+      <div className="flex flex-col items-center gap-2">
+        <ObjectNode label="Org" id={graph.orgId} href={link(graph.orgId)} accent="border-sky-500 text-sky-300" />
+        {children.length > 0 && (
+          <>
+            <div className="w-px h-4 bg-slate-700" />
+            <div className="flex flex-wrap justify-center gap-3">
+              {children.map((c) => (
+                <ObjectNode key={c.id} label={c.label} id={c.id} href={link(c.id)} accent="border-slate-700 text-slate-300" />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function ObjectNode({ label, id, href, accent }: { label: string; id: string; href: string; accent: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`block rounded-lg border ${accent} bg-slate-900 px-3 py-2 text-center hover:bg-slate-800 transition`}
+    >
+      <div className="text-xs font-semibold">{label}</div>
+      <div className="text-[11px] font-mono text-slate-500 mt-0.5">{truncateId(id)}</div>
+    </a>
   );
 }
 

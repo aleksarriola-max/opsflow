@@ -18,6 +18,29 @@ import { heuristicCompile } from "../src/policyAuthoring.js";
 import { answerQuestion } from "../src/askAgent.js";
 import type { WorkflowRequest } from "../src/types.js";
 
+/** Minimal stand-in for an executed history entry, for anomaly-detection tests. */
+function makeExecuted(id: string, fields: { vendor: string; vendorName: string; amount: number }): WorkflowRequest {
+  return {
+    id,
+    title: "x",
+    category: "software",
+    amount: fields.amount,
+    vendor: fields.vendor,
+    vendorName: fields.vendorName,
+    description: "x",
+    urgency: "normal",
+    requester: "0xa11ce",
+    requesterName: "Alice",
+    department: "ops",
+    state: "Executed",
+    createdAt: new Date().toISOString(),
+    approvals: [],
+    requiredApprovals: 0,
+    timeline: [],
+    reasoning: [],
+  } as unknown as WorkflowRequest;
+}
+
 describe("policy engine", () => {
   const bucket = buckets.find((b) => b.category === "software");
   const base = { category: "software", vendor: "0xf16a", vendorName: "Figma", urgency: "normal" as const };
@@ -70,6 +93,43 @@ describe("intelligence layer", () => {
       [],
     );
     expect(anomalies.some((a) => a.factor === "first-time-vendor")).toBe(true);
+  });
+  it("vendor trust builds gradually: 1 prior payment is a smaller flag than first-time", () => {
+    const oneExecuted = [makeExecuted("h1", { vendor: "0xv1", vendorName: "Acme", amount: 100 })];
+    const anomalies = detectAnomalies(
+      { amount: 100, vendor: "0xv1", vendorName: "Acme", category: "software", urgency: "normal", requester: "0xa11ce" },
+      oneExecuted,
+    );
+    expect(anomalies.some((a) => a.factor === "first-time-vendor")).toBe(false);
+    expect(anomalies.find((a) => a.factor === "limited-vendor-history")?.weight).toBe(8);
+  });
+  it("vendor trust builds gradually: 2 prior payments flag less than 1", () => {
+    const twoExecuted = [
+      makeExecuted("h1", { vendor: "0xv1", vendorName: "Acme", amount: 100 }),
+      makeExecuted("h2", { vendor: "0xv1", vendorName: "Acme", amount: 100 }),
+    ];
+    const anomalies = detectAnomalies(
+      { amount: 100, vendor: "0xv1", vendorName: "Acme", category: "software", urgency: "normal", requester: "0xa11ce" },
+      twoExecuted,
+    );
+    expect(anomalies.find((a) => a.factor === "limited-vendor-history")?.weight).toBe(4);
+  });
+  it("vendor trust fully established after 3 executed payments: no history-based flag", () => {
+    const threeExecuted = [1, 2, 3].map((i) => makeExecuted(`h${i}`, { vendor: "0xv1", vendorName: "Acme", amount: 100 }));
+    const anomalies = detectAnomalies(
+      { amount: 100, vendor: "0xv1", vendorName: "Acme", category: "software", urgency: "normal", requester: "0xa11ce" },
+      threeExecuted,
+    );
+    expect(anomalies.some((a) => a.factor === "first-time-vendor" || a.factor === "limited-vendor-history")).toBe(false);
+  });
+  it("amount-deviation allows more headroom with a short vendor track record", () => {
+    const oneExecuted = [makeExecuted("h1", { vendor: "0xv1", vendorName: "Acme", amount: 100 })];
+    // 4x the single prior payment — within the wider 5x headroom for n<3, so no deviation flag.
+    const anomalies = detectAnomalies(
+      { amount: 400, vendor: "0xv1", vendorName: "Acme", category: "software", urgency: "normal", requester: "0xa11ce" },
+      oneExecuted,
+    );
+    expect(anomalies.some((a) => a.factor === "amount-deviation")).toBe(false);
   });
   it("urgency+amount pressure pattern detected", () => {
     const anomalies = detectAnomalies(
