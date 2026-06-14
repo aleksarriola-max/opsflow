@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: opsflow
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: SUI_MODE
+        value: mock
+      - key: VETO_WINDOW_MS
+        value: "20000"
