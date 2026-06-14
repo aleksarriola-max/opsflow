@@ -27,6 +27,9 @@ Trigger three bad requests in a row (the two seeded blocked ones count if recent
 - **NL policy authoring (before step 5):** in Policy & Budgets, type *"Auto approve anything up to $300"* → diff preview shows $250→$300 with plain-language consequences → apply as Bob (finance-admin). Resubmit the $300 Figma request — it now auto-approves. *"We changed the rules in English; the diff was deterministic; an admin signed."*
 - **Path to yes (during step 5):** the blocked ShadyVendor request shows agent-computed counterfactuals — the agent negotiates instead of refusing.
 - **Reasoning hash (step 4):** point at the receipt's reasoning hash. *"The chain doesn't just prove the money moved — it proves why."*
+- **Vendor trust builds over time (anywhere):** submit a request to a vendor with no payment history — anomalies show `first-time-vendor` at full weight. Execute it, then submit a second request to the same vendor — the flag downgrades to `limited-vendor-history` at half weight. After three clean executions, the flag disappears entirely. *"The agent isn't permanently paranoid — it earns trust in a vendor the same way a new hire earns autonomy, and every step of that is visible in the anomaly trace."*
+- **Onchain object graph (during step 6 / close):** in Policy & Budgets, point at the **Onchain object graph** card at the top — Org, PolicySet, AgentCap, and every BudgetBucket are real objects on Sui testnet, each linking out to Sui Explorer. *"This isn't a database with a blockchain bolted on for the demo — click any box and you're looking at the actual onchain object."*
+- **Dashboard at a glance (opening):** before clicking anything, the dashboard's budget-allocation donut and request-pipeline bar chart give judges an instant read on system state — spend by category, and how many requests are pending/executed/exception right now.
 
 ## Core walkthrough
 

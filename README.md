@@ -90,10 +90,10 @@ Then set `SUI_SECRET_KEY`/`SUI_APPROVER_SECRET_KEY` to two local wallets' `sui k
 ## Tests
 
 ```bash
-cd backend && npm install && npm test        # vitest: 69 tests (unit + e2e, SUI_MODE=mock)
+cd backend && npm install && npm test        # vitest: 84 tests (unit + e2e, SUI_MODE=mock)
 ```
 
 CI (`.github/workflows/ci.yml`) runs the backend test suite plus `tsc --noEmit` for both
 packages and the frontend production build on every push/PR.
 
-`test/e2e.test.ts` covers: thresholds, denylist, caps, state machine legality, parser, full approve→execute loop, self-approval block, autonomous execution under AgentCap, revocation, structuring detection, circuit breaker trips, veto windows (veto, elapse, cancel-defuse), backtesting, duplicate detection, hash-chain tamper detection, and grounded Q&A.
+`test/e2e.test.ts` covers: thresholds, denylist, caps, state machine legality, parser, full approve→execute loop, self-approval block, autonomous execution under AgentCap, revocation, structuring detection, circuit breaker trips, veto windows (veto, elapse, cancel-defuse), backtesting, duplicate detection, graduated vendor trust, hash-chain tamper detection, and grounded Q&A.

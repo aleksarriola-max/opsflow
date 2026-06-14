@@ -17,7 +17,9 @@ The blocker for agentic finance isn't capability — it's trust. So we built tru
 
 ## What it does (live demo)
 
-NL request → agent reasoning streams live → policy rules + anomaly checks (first-time vendor, amount deviation, duplicate payments, **threshold structuring**) → auto-approve & autonomous execution under AgentCap, or routed to approvers → high-risk payments wait in a **veto window** with a countdown → execution on Sui with reasoning-hash receipt → blocked requests get computed **paths to yes**. Admins write policy in English, preview the deterministic diff, and see it **backtested against history** before signing. Ask the agent "why was this blocked?" and it answers from the audit trail — never from imagination.
+NL request → agent reasoning streams live → policy rules + anomaly checks (vendor trust, amount deviation, duplicate payments, **threshold structuring**) → auto-approve & autonomous execution under AgentCap, or routed to approvers → high-risk payments wait in a **veto window** with a countdown → execution on Sui with reasoning-hash receipt → blocked requests get computed **paths to yes**. Admins write policy in English, preview the deterministic diff, and see it **backtested against history** before signing. Ask the agent "why was this blocked?" and it answers from the audit trail — never from imagination.
+
+The agent's vendor trust isn't binary: a first-time payee carries the most scrutiny, but that risk decays as the agent builds an executed track record with each vendor — after three clean payments the "new vendor" flag disappears entirely. The Policy & Budgets view also renders the org's live Sui object graph — Org → PolicySet → AgentCap → BudgetBuckets — each box a real testnet object with an Explorer link, so judges can click straight through to the chain.
 
 ## Why Sui specifically
 
@@ -25,8 +27,8 @@ Workflows are shared objects with strict lifecycle transitions. Policy, budgets,
 
 ## Engineering evidence
 
-4 Move modules (Org/roles, PolicySet/BudgetBucket, WorkflowRequest state machine, AgentCap). Node/TS backend: deterministic policy engine, 13-state transition table, anomaly engine, auditor pass, NL policy compiler with backtest. React frontend: 6 screens incl. live reasoning stream, approval inbox, exceptions/recovery. **67-check end-to-end suite** covering self-approval blocks, structuring detection, circuit-breaker trips, veto windows, hash-chain tamper detection. TypeScript-clean on both sides.
+4 Move modules (Org/roles, PolicySet/BudgetBucket, WorkflowRequest state machine, AgentCap), deployed live on Sui testnet. Node/TS backend: deterministic policy engine, 13-state transition table, anomaly engine, auditor pass, NL policy compiler with backtest. React frontend: 6 screens incl. live reasoning stream, approval inbox, exceptions/recovery, and a Sui object-graph visualization with Explorer links. zkLogin (walletless approvals via Enoki) and USDC payouts (`Coin<T>`-generic `workflow::execute`) are both shipped. **84-check end-to-end suite** covering self-approval blocks, structuring detection, circuit-breaker trips, veto windows, hash-chain tamper detection, and graduated vendor trust. TypeScript-clean on both sides.
 
 ## Roadmap
 
-Testnet → mainnet (architecture is wired; chain layer maps 1:1 to Move entry points). Then zkLogin approvals (finance leads don't have wallets), USDC payouts, recurring workflows, multi-team workspaces. The category: **autonomous operations infrastructure** — the operating layer where AI agents do the work and the chain holds the leash.
+Testnet → mainnet (architecture is wired; chain layer maps 1:1 to Move entry points). Next: recurring workflows, multi-team workspaces. The category: **autonomous operations infrastructure** — the operating layer where AI agents do the work and the chain holds the leash.

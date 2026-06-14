@@ -104,7 +104,7 @@ frontend/src/  (React + Vite + Tailwind CDN, proxy /api -> :4000)
 
 ## Verification
 
-- `backend/test/e2e.test.ts` — 49 vitest cases covering the full product loop (SUI_MODE=mock, no chain dependency), alongside `policyEngine.test.ts` (14) and `sui.test.ts` (15) — 78 total. Run: `cd backend && npm test`.
+- `backend/test/e2e.test.ts` — 53 vitest cases covering the full product loop (SUI_MODE=mock, no chain dependency), alongside `policyEngine.test.ts` (14) and `sui.test.ts` (17) — 84 total. Run: `cd backend && npm test`.
 - Frontend: `npx tsc --noEmit && npm run build`. Backend also type-checks clean: `npx tsc --noEmit` (pin `@types/express@4`). Frontend type-checks and builds clean both with and without `VITE_ENOKI_API_KEY`/`VITE_GOOGLE_CLIENT_ID` set.
 - `.github/workflows/ci.yml` runs both on every push/PR (backend tsc+test, frontend tsc+build).
 - Keep this suite green after every change. Extend it for new features.
