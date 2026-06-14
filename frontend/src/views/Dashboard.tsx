@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
+import {
+  Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+} from "recharts";
 import { api, type BurnForecast, type Meta, type WorkflowRequest } from "../api";
 import { Card, RiskBadge, StateBadge, money } from "../ui";
+
+const BUCKET_COLORS = ["#38bdf8", "#a78bfa", "#fb7185", "#34d399"];
+
+const TOOLTIP_STYLE = { background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8, fontSize: 12 };
+const AXIS_TICK = { fill: "#64748b", fontSize: 11 };
 
 export function Dashboard({ requests, meta, onOpen }: {
   requests: WorkflowRequest[]; meta: Meta | null; onOpen: (id: string) => void;
@@ -24,6 +32,57 @@ export function Dashboard({ requests, meta, onOpen }: {
         <Stat label="Awaiting approval" value={needApproval.length} accent="text-amber-400" />
         <Stat label="Executed onchain" value={executed.length} accent="text-emerald-400" />
         <Stat label="Exceptions" value={alerts.length} accent={alerts.length ? "text-rose-400" : undefined} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Card title="Budget allocation">
+          {meta && meta.buckets.some((b) => b.spent > 0) ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={meta.buckets}
+                  dataKey="spent"
+                  nameKey="name"
+                  innerRadius={48}
+                  outerRadius={75}
+                  paddingAngle={2}
+                  strokeWidth={0}
+                >
+                  {meta.buckets.map((b, i) => (
+                    <Cell key={b.id} fill={BUCKET_COLORS[i % BUCKET_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={TOOLTIP_STYLE} itemStyle={{ color: "#e2e8f0" }} formatter={(v: number) => money(v)} />
+                <Legend wrapperStyle={{ fontSize: 12, color: "#94a3b8" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-sm text-slate-500">No spend recorded yet.</p>
+          )}
+        </Card>
+
+        <Card title="Request pipeline">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart
+              data={[
+                { name: "Pending", value: pending.length, color: "#38bdf8" },
+                { name: "Awaiting approval", value: needApproval.length, color: "#fbbf24" },
+                { name: "Executed", value: executed.length, color: "#34d399" },
+                { name: "Exceptions", value: alerts.length, color: "#fb7185" },
+              ]}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
+              <XAxis dataKey="name" tick={AXIS_TICK} axisLine={{ stroke: "#1e293b" }} tickLine={false} />
+              <YAxis allowDecimals={false} tick={AXIS_TICK} axisLine={false} tickLine={false} width={28} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} itemStyle={{ color: "#e2e8f0" }} cursor={{ fill: "#1e293b" }} />
+              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                {[0, 1, 2, 3].map((i) => (
+                  <Cell key={i} fill={["#38bdf8", "#fbbf24", "#34d399", "#fb7185"][i]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
