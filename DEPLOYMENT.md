@@ -67,8 +67,8 @@ from the gas coin in SUI, and the receipt shows "SUI" as the currency.
 
 ## Checklist to "finished"
 
-- [ ] Move package deployed to testnet (`move/deploy.ps1`), one real tx digest in hand
-- [ ] App hosted with a public URL
+- [x] Move package deployed to testnet (`move/deploy.ps1`), one real tx digest in hand
+- [x] App hosted with a public URL — https://opsflow-hso3.onrender.com
 - [ ] Custom domain mapped
 - [ ] Demo rehearsed twice end-to-end (DEMO.md), reset between runs
 - [ ] 3-minute backup video recorded (screen capture of the live site)
