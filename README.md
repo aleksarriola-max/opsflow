@@ -39,6 +39,20 @@ frontend/   React/Vite: dashboard w/ burn forecasts, NL + form intake,
 
 See **BUILD_SPEC.md** for the full handoff document (architecture invariants, repo map, API routes, next work).
 
+## When I'd distrust it
+
+OpsFlow is built so a wrong model can't move money, but the guarantees are only as good as the rules and the environment around them:
+
+- **The rules are the whole defense.** The agent assumes the policy, budgets and vendor lists are complete and current. A stale allowlist or a missing rule lets a bad request through cleanly.
+- **Structuring detection has a narrow window.** It flags repeated sub-threshold payments to the *same vendor within 24 hours*. Splitting across vendors, or spacing payments further apart, would not trip it.
+- **Without an API key, intent parsing is heuristic.** The demo falls back to a deterministic keyword parser, which is predictable but misreads unusual phrasing (the policy layer still checks whatever it produces).
+- **Not all paths are proven on a public network.** The full flow is verified on a local Sui network; public-testnet runs, zkLogin approvals and USDC payouts are covered by tests and builds, not end-to-end runs (see `BUILD_SPEC.md`).
+- **Thresholds are demo values.** $250 / $2,000 / $10,000 are illustrative; real limits need a finance owner.
+
+**The safeguard I'd add:** human sign-off on any action type the agent hasn't executed before, and a cross-vendor version of the structuring check.
+
+Full write-up: [OpsFlow case study](https://aleksarriola-max.github.io/#case-opsflow)
+
 ## Run the demo
 
 ```bash
