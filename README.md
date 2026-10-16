@@ -2,6 +2,17 @@
 
 A policy-bound AI operations agent: natural-language requests become stateful Sui workflows with deterministic policy checks, human approvals, onchain execution, and a verifiable audit trail.
 
+[![CI](https://github.com/aleksarriola-max/opsflow/actions/workflows/ci.yml/badge.svg)](https://github.com/aleksarriola-max/opsflow/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/tests-84%20passing-2ea44f)](backend/test/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7?logo=render&logoColor=white)](https://opsflow-hso3.onrender.com/)
+[![Sui](https://img.shields.io/badge/Sui-Move-4DA2FF?logo=sui&logoColor=white)](move/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-React-3178C6?logo=typescript&logoColor=white)](frontend/)
+
+<p align="center">
+  <img src="docs/opsflow-demo.gif" width="760" alt="OpsFlow tour: operations dashboard, approval inbox, policy and budget administration, exceptions"/>
+  <br><sub>Dashboard → Approval Inbox → Policy &amp; Budgets (plain-English policy, AgentCap limits, circuit breaker) → Exceptions (demo data, mock chain)</sub>
+</p>
+
 **Golden rule:** the LLM proposes; only deterministic code approves state transitions and executes money movement.
 
 ## Headline features
